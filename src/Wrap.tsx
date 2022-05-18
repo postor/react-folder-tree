@@ -1,72 +1,76 @@
-import { FC, useCallback, useEffect, useState } from "react"
-import { ContentType, GetContents, TemplateType } from "."
+import { FC, useCallback, useEffect, useState } from "react";
+import { ContentType, GetContents, TemplateType } from "./def";
 
 export const Wrap: FC<{
-  base: string
-  name: string
-  isFolder: boolean
-  initOpen?: boolean
-  Template: TemplateType
-  getContents: GetContents
-}> = ({
-  initOpen = false,
-  base = '',
-  name,
-  isFolder,
-  Template,
-  getContents
-}) => {
-    let [isOpen, setOpen] = useState(false)
-    let [contents, setContents] = useState<ContentType | undefined>()
-    let [isLoading, setLoading] = useState(false)
-    let [error, setError] = useState()
-    let [reload, setReload] = useState(0)
-    useEffect(() => {
-      if (!contents && initOpen) setOpen(true)
-    }, [initOpen, contents])
+  base: string;
+  name: string;
+  isFolder: boolean;
+  rootName?: string;
+  Template: TemplateType;
+  getContents: GetContents;
+  level?: number;
+}> = ({ base = "", name, isFolder, Template, getContents, level = 0 }) => {
+  let [isOpen, setOpen] = useState(false);
+  let [contents, setContents] = useState<ContentType | undefined>();
+  let [isLoading, setLoading] = useState(0);
+  let [error, setError] = useState();
+  useEffect(() => {
+    if (!contents && !name) setOpen(true);
+  }, [name, contents]);
 
-    useEffect(() => {
-      getContents(base).then(x => {
-        setLoading(false)
-        setContents(x)
-      }).catch(e => {
-        setLoading(false)
-        setError(e)
+  let reloadCB = useCallback(() => {
+    setLoading((x) => x + 1);
+    getContents(base)
+      .then((x) => {
+        setLoading((x) => x - 1);
+        setContents(x);
       })
-    }, [reload, base])
+      .catch((e) => {
+        setLoading((x) => x - 1);
+        setError(e);
+      });
+  }, [base, getContents]);
 
-    useEffect(() => {
-      if (!contents && isOpen) {
-        setReload(x => x + 1)
-      }
-    }, [isOpen, contents])
+  let taggleCB = useCallback(() => {
+    if (!contents && !isOpen) {
+      reloadCB();
+    }
+    setOpen((x) => !x);
+  }, [isOpen, contents, reloadCB]);
 
-    let taggleCB = useCallback(() => setOpen(x => !x), [])
-    let reloadCB = useCallback(() => setReload(x => x + 1), [])
-    let { folders = [], files = [] } = contents || {}
+  let { folders = [], files = [] } = contents || {};
 
-    return <Template
+  return (
+    <Template
       base={base}
       name={name}
       isFolder={isFolder}
-      folders={folders.map(x => <Wrap
-        base={base + '/' + x}
-        name={x}
-        isFolder={true}
-        Template={Template}
-        getContents={getContents}
-      />)}
-      files={files.map(x => <Wrap
-        base={base + '/' + x}
-        name={x}
-        isFolder={false}
-        Template={Template}
-        getContents={getContents}
-      />)}
-      isLoading={isLoading}
+      folders={folders.map((x) => (
+        <Wrap
+          base={base + "/" + x}
+          name={x}
+          isFolder={true}
+          Template={Template}
+          getContents={getContents}
+          level={level + 1}
+        />
+      ))}
+      files={files.map((x) => (
+        <Wrap
+          base={base + "/" + x}
+          name={x}
+          isFolder={false}
+          Template={Template}
+          getContents={getContents}
+          level={level + 1}
+        />
+      ))}
+      isLoading={!!isLoading}
       isOpen={isOpen}
       taggle={taggleCB}
       error={error}
       reload={reloadCB}
+      level={level}
     />
-  } 
+  );
+};

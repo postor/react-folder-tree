@@ -1,27 +1,8 @@
-import { FC,  ComponentType, ReactElement } from "react"
+import { FC } from "react"
+import { GetContents, TemplateType } from "./def"
 import { Wrap } from "./Wrap"
 
-export type TemplateProps = {
-  base: string,
-  name: string,
-  isFolder: boolean,
-  folders: ReactElement[],
-  files: ReactElement[],
-  isLoading: boolean,
-  isOpen: boolean,
-  taggle: () => void
-  error?:any
-  reload:()=>void
-}
-
-export type TemplateType = ComponentType<TemplateProps> | FC<TemplateProps>
-
-export type ContentType = {
-  folders: string[],
-  files: string[],
-}
-
-export type GetContents = (base: string) => Promise<ContentType>
+export { DefaultTemplate } from './DefaultTemplate'
 
 export const FolderTree: FC<{
   Template: TemplateType,
@@ -29,11 +10,11 @@ export const FolderTree: FC<{
   base?: string
   rootName?: string
 }> = ({
-  rootName,Template,getContents,base=''
+  rootName, Template, getContents, base = ''
 }) => {
-  if(rootName) return  <Wrap base={base} name={rootName} getContents={getContents} isFolder={true} Template={Template} />
-  return 
-}
+    if (rootName) return <Wrap base={base} name={rootName} getContents={getContents} isFolder={true} Template={Template} />
+    return <Wrap base={base} name="" getContents={getContents} isFolder={true} Template={Template} />
+  }
 
 export default FolderTree
 
