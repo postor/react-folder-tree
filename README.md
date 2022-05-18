@@ -22,3 +22,14 @@ import {FolderTree,DefaultTemplate} from "@postor/react-folder-tree"
   rootName="root"
 />
 ```
+
+## customize UI
+
+create your template based on [`DefaultTemplate`](./src/DefaultTemplate.tsx) and then
+
+基于 [`DefaultTemplate`](./src/DefaultTemplate.tsx)  创建你自己的 UI 模板，然后
+
+```
+<FolderTree
+  Template={YourTemplate}
+```

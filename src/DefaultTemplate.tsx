@@ -18,7 +18,7 @@ export const DefaultTemplate: TemplateType = ({
     if (!name) reload();
   }, [name, reload]);
 
-  if (!isFolder) return <a onClick={() => alert(base)}>🗎${name}</a>;
+  if (!isFolder) return <a onClick={() => alert(base)}>🗎{name}</a>;
 
   return (
     <div>

@@ -1,6 +1,6 @@
 {
   "name": "@postor/react-folder-tree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "yet another folder tree component for react",
   "main": "dist/index.js",
   "scripts": {
